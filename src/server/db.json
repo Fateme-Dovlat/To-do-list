@@ -1,0 +1,17 @@
+{
+  "task": [
+    {
+      "task": "learn du",
+      "id": "54m5ea42YIU"
+    },
+    {
+      "task": "cleaning kitchen",
+      "id": "wcVf908wrZE"
+    },
+    {
+      "task": "learn english",
+      "id": "th25cut2Bv4"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
