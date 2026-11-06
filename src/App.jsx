@@ -9,6 +9,9 @@ function App() {
   const [tasks, setTasks] = useState([])
   const [loading, setloading] = useState(false)
 
+  const [editId, setEditId] = useState(null);
+  const [editValue, setEditValue] = useState("");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -57,6 +60,34 @@ function App() {
     }
   };
 
+  const handleEdit = (item) => {
+    setEditId(item.id);
+    setEditValue(item.task);
+  };
+
+  const updateTask = async () => {
+    try {
+      const { data: updatedTask } = await axios.patch(
+        `http://localhost:9000/task/${editId}`,
+        {
+          task: editValue.trim(),
+        }
+      );
+
+      setTasks((prevTasks) =>
+        prevTasks.map((item) =>
+          item.id === editId ? updatedTask : item
+        )
+      );
+
+      setEditId(null);
+      setEditValue("");
+
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
 
   return (
     <div className="container mt-5">
@@ -67,7 +98,7 @@ function App() {
       <div className="row justify-content-center">
         <div className="col-md-6">
 
-          <AddTask task={task} setTask={setTask} addTask={addTask}  />
+          <AddTask task={task} setTask={setTask} addTask={addTask} />
 
           {loading ? (
             <p>Loading...</p>
@@ -79,9 +110,30 @@ function App() {
                   key={item.id}
                   className="list-group-item d-flex justify-content-between align-items-center"
                 >
-                  <span>{item.task}</span>
+                  {editId === item.id ? (
+                    <input
+                      type="text"
+                      className="form-control me-2"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                    />
+                  ) : (
+                    <span>{item.task}</span>
+                  )}
 
-                  <DeleteTask onDelete={() => deleteTask(item.id)}  />
+                  <div className="d-flex gap-2">
+                    <button
+                      className={`btn btn-sm ${editId === item.id ? "btn-success" : "btn-warning"
+                        }`}
+                      onClick={() =>
+                        editId === item.id ? updateTask() : handleEdit(item)
+                      }
+                    >
+                      {editId === item.id ? "Save" : "Edit"}
+                    </button>
+
+                    <DeleteTask onDelete={() => deleteTask(item.id)} />
+                  </div>
                 </li>
               ))}
             </ul>
